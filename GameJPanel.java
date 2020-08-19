@@ -14,33 +14,34 @@ public class GameJPanel extends JPanel{
 	private Image[] background;
 	
 	
-//´ı¶¨
+	
+//å¾…å®š
 //	private Image showfield;
 //	private Image distancefield;
 	
-//	Plane plane;   ĞèÒªÊµÏÖ£¬Íæ¼Ò²Ù¿ØµÄ·É»ú
+//	Plane plane;   éœ€è¦å®ç°ï¼Œç©å®¶æ“æ§çš„é£æœº
 
-//  ËÄÖÖÕÏ°­Îï£¨¿ÉÒÔÊÇĞĞĞÇ¡¢ºÚ¶´»òÕßµĞ»ú£©
+//  å››ç§éšœç¢ç‰©ï¼ˆå¯ä»¥æ˜¯è¡Œæ˜Ÿã€é»‘æ´æˆ–è€…æ•Œæœºï¼‰
 //	Barrs_1[] barrs_1;
 //	Barrs_2[] barrs_2;
 //	Barrs_3[] barrs_3;
 //	Barrs_4[] barrs_4;
 	
-//  Boss ×îºóµÄBOSS£¬´ò°Ü¼ÈÍ¨¹Ø	
+//  Boss æœ€åçš„BOSSï¼Œæ‰“è´¥æ—¢é€šå…³	
 //  Boss boss;
 
-// ½ğ±Ò£¬Ò²¿ÉÒÔ»»³ÉÆäËûµÄ£¬±ÈÈç±¦Ê¯£¬È¼ÓÍ
+// é‡‘å¸ï¼Œä¹Ÿå¯ä»¥æ¢æˆå…¶ä»–çš„ï¼Œæ¯”å¦‚å®çŸ³ï¼Œç‡ƒæ²¹
 //  Gold[] gold;
 
     public GameJPanel() {
     	background = new Image[2];
     	background[0] = new ImageIcon("image/background.jpg").getImage();
-    	background[1] = new ImageIcon("image/background2.jpg").getImage();
+    	background[1]= new ImageIcon("image/background2.jpg").getImage();
 
-	//  ÆäËûÄÚÈİºóÆÚÌí¼Ó
+	//  å…¶ä»–å†…å®¹åæœŸæ·»åŠ 
 }
 
-    //»æ»­·½·¨
+    //ç»˜ç”»æ–¹æ³•
     int a = 0;
     public void paint(Graphics g)
     {
@@ -48,8 +49,10 @@ public class GameJPanel extends JPanel{
     	g.drawImage(background[0],0,a,GameJFrame.WIDTH, GameJFrame.HEIGHT,null);
     	g.drawImage(background[1],0,a+GameJFrame.HEIGHT,GameJFrame.WIDTH, GameJFrame.HEIGHT,null);
     	if(a == GameJFrame.HEIGHT) {
-    		a=0;
+    		a = 0;
     	}
+    	
+    	
     }
     
     
@@ -61,7 +64,7 @@ public class GameJPanel extends JPanel{
     			while(true) {
     				repaint();
     				try {
-    					Thread.sleep(10);
+    					Thread.sleep(0);
     				}catch(InterruptedException e)
     				{
     					e.printStackTrace();
