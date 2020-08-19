@@ -47,7 +47,7 @@ public class GameJPanel extends JPanel{
     {
     	a++;
     	g.drawImage(background[0],0,a,GameJFrame.WIDTH, GameJFrame.HEIGHT,null);
-    	g.drawImage(background[1],0,a+GameJFrame.HEIGHT,GameJFrame.WIDTH, GameJFrame.HEIGHT,null);
+    	g.drawImage(background[1],0,a-GameJFrame.HEIGHT,GameJFrame.WIDTH, GameJFrame.HEIGHT,null);
     	if(a == GameJFrame.HEIGHT) {
     		a = 0;
     	}
@@ -64,7 +64,7 @@ public class GameJPanel extends JPanel{
     			while(true) {
     				repaint();
     				try {
-    					Thread.sleep(0);
+    					Thread.sleep(30);
     				}catch(InterruptedException e)
     				{
     					e.printStackTrace();
