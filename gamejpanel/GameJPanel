@@ -1,0 +1,136 @@
+package gamejpanel;
+
+import java.awt.Graphics;
+import java.awt.Image;
+import java.util.Arrays;
+
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+
+import entity.BaoShi;
+import entity.airplane;
+import gamejframe.GameJFrame;
+
+
+public class GameJPanel extends JPanel{
+
+	private Image[] background;
+	private airplane[] airplane;
+	
+	
+//待定
+//	private Image showfield;
+//	private Image distancefield;
+	
+//	Plane plane;   需要实现，玩家操控的飞机
+
+//  四种障碍物（可以是行星、黑洞或者敌机）
+//	Barrs_1[] barrs_1;
+//	Barrs_2[] barrs_2;
+//	Barrs_3[] barrs_3;
+//	Barrs_4[] barrs_4;
+	
+//  Boss 最后的BOSS，打败既通关	
+//  Boss boss;
+
+// 金币，也可以换成其他的，比如宝石，燃油
+    private BaoShi[] baoshi = new BaoShi[1];
+   
+
+    public GameJPanel() {
+    	
+    	
+    	
+        baoshi[0] = new BaoShi();
+        airplane =new airplane[0];
+    	background = new Image[2];
+    	background[0] = new ImageIcon("image/background.png").getImage();
+    	background[1]= new ImageIcon("image/background2.png").getImage();
+
+	//  其他内容后期添加
+}
+
+    //绘画方法
+    int a = 0;
+    public void paint(Graphics g)
+    {
+    	
+    	a++;
+    	g.drawImage(background[0],0,a,GameJFrame.WIDTH, GameJFrame.HEIGHT,null);
+    	g.drawImage(background[1],0,a-GameJFrame.HEIGHT,GameJFrame.WIDTH, GameJFrame.HEIGHT,null);
+    	g.drawImage(background[1],0,a-2*GameJFrame.HEIGHT,GameJFrame.WIDTH, GameJFrame.HEIGHT,null);
+    	g.drawImage(background[0],0,a-3*GameJFrame.HEIGHT,GameJFrame.WIDTH, GameJFrame.HEIGHT,null);
+    	if(a == 3*GameJFrame.HEIGHT) {
+    		a = 0;
+    	}
+    	
+    	for (int i = 0; i < baoshi.length; i++) {
+			baoshi[i].paintBaoShi(g);
+		}
+		
+    	for(int i = 0;i < airplane.length;i++) {
+    		airplane[i].paintairplane(g);
+    	}
+	}
+    
+    
+    
+    public void action() {
+    	new Thread() {
+    		@Override
+    		public void run() {
+    			super.run();
+    			while(true) {
+    				
+    			    //移动方法
+    				stepAction();
+    				//批量生产方法
+    				EnterAction();
+    				repaint();
+    				try {
+    					Thread.sleep(10);
+    				}catch(InterruptedException e)
+    				{
+    					e.printStackTrace();
+    				}
+    			}
+    		}
+    	}.start();
+    }
+    
+    
+    
+    
+    int index = 0;
+    protected void EnterAction() {
+    	index++;
+		if(index%400==0) {
+			// 创建对象，往敌机数组里添加对象
+			airplane a1 = new airplane();
+			//扩容
+			airplane = Arrays.copyOf(airplane,airplane.length+1);
+			//添加对象
+			airplane[airplane.length-1] = a1;
+		}
+		
+		if(index%150 == 0)
+		{
+			BaoShi b = new BaoShi();
+			baoshi = Arrays.copyOf(baoshi, baoshi.length+1);
+		    baoshi[baoshi.length-1] = b;
+			
+		}
+	}
+
+    
+    private void stepAction()
+    {
+    	
+    	for (int i = 0; i <baoshi.length; i++) {
+			baoshi[i].step();
+		}
+    	for(int i = 0;i < airplane.length;i++) {
+    		airplane[i].step();
+	    }
+    }
+}
