@@ -2,21 +2,30 @@ package gamejpanel;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import entity.Attack;
+
+import entity.Fighter;
 
 import entity.BaoShi;
 import entity.airplane;
 import gamejframe.GameJFrame;
 
 
-public class GameJPanel extends JPanel{
+public class GameJPanel extends JPanel implements KeyListener{
 
 	private Image[] background;
 	private airplane[] airplane;
-	
+	Fighter fighter;
+	Attack[] attack1;
+	Attack attack;
 	
 //待定
 //	private Image showfield;
@@ -38,7 +47,9 @@ public class GameJPanel extends JPanel{
    
 
     public GameJPanel() {
-    	
+    	attack = new Attack();
+    	attack1 = new Attack[0];
+    	fighter = new Fighter();
     	
     	
         baoshi[0] = new BaoShi();
@@ -63,7 +74,32 @@ public class GameJPanel extends JPanel{
     	if(a == 3*GameJFrame.HEIGHT) {
     		a = 0;
     	}
+    	fighter.paintFighter(g);
+	 for(int i = 0;i<attack1.length;i++)
+ 	    {
+ 	    	attack1[i].paintAttack(g);
+ 	    	}
+	//技能
+    	if(fighter.isR()==true) {
     	
+    		fighter.paintSkill(g);
+    		Timer timer = new Timer();// 实例化Timer类
+            timer.schedule(new TimerTask() {
+                public void run() {
+                	fighter.setR(false);
+                    this.cancel();
+                }
+            }, 2000);// 这里百毫秒
+            
+            
+    	}
+	if(fighter.isQ()==true) {
+    		fighter.paintfire(g);
+    		fighter.setQ(false);
+    	}
+	
+
+
     	for (int i = 0; i < baoshi.length; i++) {
 			baoshi[i].paintBaoShi(g);
 		}
@@ -120,12 +156,21 @@ public class GameJPanel extends JPanel{
 		    baoshi[baoshi.length-1] = b;
 			
 		}
+		//子弹
+		Attack b1 = new Attack();
+	    attack1 = Arrays.copyOf(attack1,attack1.length+1);
+	    attack1[attack1.length-1] = b1;
 	}
 
     
     private void stepAction()
     {
-    	
+    	for(int i = 0;i<attack1.length;i++)
+		{
+			attack1[i].step();
+		}
+
+	
     	for (int i = 0; i <baoshi.length; i++) {
 			baoshi[i].step();
 		}
@@ -133,4 +178,83 @@ public class GameJPanel extends JPanel{
     		airplane[i].step();
 	    }
     }
+    public void keyPressed(KeyEvent e) {
+		// 获取当前坐标
+		int x = Fighter.getX_gun();
+		int y = Fighter.getY_gun();
+		//上移
+		if(e.getKeyCode()==KeyEvent.VK_UP) {
+
+			Fighter.setY_gun(y-20);
+			fighter.setQ(true);
+
+		}
+		//上移上限
+		if(Fighter.getY_gun()<=0) {
+			Fighter.setY_gun(y);
+		}
+		//下移
+		if(e.getKeyCode()==KeyEvent.VK_DOWN) {
+
+			Fighter.setY_gun(y+20);
+			
+
+		}
+		//下移上限
+		if(Fighter.getY_gun()>=GameJFrame.HEIGHT-100) {
+			Fighter.setY_gun(y);
+		}
+		//右
+		if(e.getKeyCode()==KeyEvent.VK_RIGHT) {
+				Fighter.setX_gun(x+20);
+			fighter.setQ(true);
+			
+		}
+		//右移上限
+		if(Fighter.getX_gun()>=GameJFrame.WIDTH-50) {
+			Fighter.setX_gun(x);
+		}
+		//左
+		if(e.getKeyCode()==KeyEvent.VK_LEFT) {
+			Fighter.setX_gun(x-20);
+			fighter.setQ(true);
+			
+		}
+		//左移上限
+		if(Fighter.getX_gun()<=0) {
+			Fighter.setX_gun(x);
+		}
+		//放技能
+		if(e.getKeyCode()==KeyEvent.VK_SPACE) {
+			fighter.setR(true);
+	}
+		//平a
+		if(e.getKeyCode()==KeyEvent.VK_X) {
+			attack.setJ(true);
+			
+		}
+
+						
+				
+	}
+
+
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+		
+}
+
+    
 }
