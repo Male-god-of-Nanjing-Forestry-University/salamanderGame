@@ -149,7 +149,7 @@ public class GameJPanel extends JPanel implements KeyListener{
 		}
 		
 		//宝石
-		if(index%250 == 0)
+		if(index%800 == 0)
 		{
 			
 			BaoShi a = new BaoShi1();
@@ -166,7 +166,7 @@ public class GameJPanel extends JPanel implements KeyListener{
 		    baoshi[baoshi.length-1] = b;
 		}
 		
-		if(index%120 == 0)
+		if(index%100 == 0)
 		{
 			BaoShi c = new BaoShi3();
 			baoshi = Arrays.copyOf(baoshi, baoshi.length+1);
