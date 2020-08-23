@@ -134,8 +134,7 @@ public class GameJPanel extends JPanel implements KeyListener{
     	}.start();
     }
     
-    
-    
+   
     
     int index = 0;
     protected void EnterAction() {
@@ -149,17 +148,34 @@ public class GameJPanel extends JPanel implements KeyListener{
 			airplane[airplane.length-1] = a1;
 		}
 		
+		//宝石
+		if(index%250 == 0)
+		{
+			
+			BaoShi a = new BaoShi1();
+			baoshi = Arrays.copyOf(baoshi, baoshi.length+1);
+		    baoshi[baoshi.length-1] = a;
+		    
+		    
+		}
+		
 		if(index%150 == 0)
 		{
-			BaoShi b = new BaoShi();
+			BaoShi b = new BaoShi2();
 			baoshi = Arrays.copyOf(baoshi, baoshi.length+1);
 		    baoshi[baoshi.length-1] = b;
-			
+		}
+		
+		if(index%120 == 0)
+		{
+			BaoShi c = new BaoShi3();
+			baoshi = Arrays.copyOf(baoshi, baoshi.length+1);
+		    baoshi[baoshi.length-1] = c;
 		}
 		//子弹
 		Attack b1 = new Attack();
-	    attack1 = Arrays.copyOf(attack1,attack1.length+1);
-	    attack1[attack1.length-1] = b1;
+	        attack1 = Arrays.copyOf(attack1,attack1.length+1);
+	        attack1[attack1.length-1] = b1;
 	}
 
     
@@ -177,6 +193,22 @@ public class GameJPanel extends JPanel implements KeyListener{
     	for(int i = 0;i < airplane.length;i++) {
     		airplane[i].step();
 	    }
+    }
+    
+    
+    
+    //出界
+    private void outEntity() {
+    	
+    	
+    	for (int i = 0; i < baoshi.length; i++) {
+			if(baoshi[i].getY() > (BaoShi.HEIGHT + GameJFrame.HEIGHT)){
+				BaoShi g = baoshi[i];
+				baoshi[i] = baoshi[baoshi.length-1];
+				baoshi[baoshi.length-1]=g;
+				baoshi = Arrays.copyOf(baoshi, baoshi.length-1);
+			}
+		}
     }
     public void keyPressed(KeyEvent e) {
 		// 获取当前坐标
