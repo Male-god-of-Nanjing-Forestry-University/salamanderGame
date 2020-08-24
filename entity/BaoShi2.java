@@ -11,18 +11,34 @@ import gamejframe.GameJFrame;
 
 public class BaoShi2 extends BaoShi{
 
-	//åæ ‡
+	//×ø±ê
 		protected int x,y;
-		//å®çŸ³çš„é•¿ã€å®½
+		public int getX() {
+			return x;
+		}
+
+
+		public int getY() {
+			return y;
+		}
+		
+	//·ÖÊı
+		public int getCount()
+		  {
+			return count;
+			  
+		  }
+
+		//±¦Ê¯µÄ³¤¡¢¿í
 		public static final int WIDTH = 20;
 		public static final int HEIGHT = 20;
-		//å®çŸ³çš„å›¾åƒ
+		//±¦Ê¯µÄÍ¼Ïñ
 		protected BufferedImage image;
-		//å­˜æ”¾å®çŸ³æ‰€æœ‰å›¾ç‰‡
+		//´æ·Å±¦Ê¯ËùÓĞÍ¼Æ¬
 		protected BufferedImage image1,image2;
 		protected BufferedImage[] i;
 		
-		//å¯å¾—çš„åˆ†æ•°
+		//¿ÉµÃµÄ·ÖÊı
 	    protected int count = 30;
 		
 		Random df = new Random();
@@ -32,12 +48,12 @@ public class BaoShi2 extends BaoShi{
 	
 	
 	int index = 0;
-	//å®çŸ³çš„å˜æ¢
+	//±¦Ê¯µÄ±ä»»
 	public void step(){
-		image = i[index++/80%i.length];
+		image = i[index++/50%i.length];
 
-		//ä¸åŒçš„å®çŸ³å¯¹åº”ä¸åŒçš„æ‰è½
-		y += 5; 
+		//²»Í¬µÄ±¦Ê¯¶ÔÓ¦²»Í¬µÄµôÂä
+		y += 4; 
 	}
 
 	
@@ -58,7 +74,7 @@ public class BaoShi2 extends BaoShi{
 	  }
 	}
 	
-	//ç»˜åˆ¶
+	//»æÖÆ
 		public void paintBaoShi(Graphics g){
 			
 				g.drawImage(image,x,y,WIDTH,HEIGHT,null );						

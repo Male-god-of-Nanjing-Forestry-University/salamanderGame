@@ -12,6 +12,27 @@ import gamejframe.GameJFrame;
 public class BaoShi3 extends BaoShi{
 	//坐标
 		protected int x,y;
+		public int getX() {
+			return x;
+		}
+
+
+		public void setX(int x) {
+			this.x = x;
+		}
+
+
+		public int getY() {
+			return y;
+		}
+		
+		//分数
+		public int getCount()
+		  {
+			return count;
+			  
+		  }
+
 		//宝石的长、宽
 		public static final int WIDTH = 20;
 		public static final int HEIGHT = 20;
@@ -32,7 +53,7 @@ public class BaoShi3 extends BaoShi{
 	int index = 0;
 	//宝石的变换
 	public void step(){
-		image = i[index++/80%i.length];
+		image = i[index++/50%i.length];
 
 		//不同的宝石对应不同的掉落
 		y += 2; 
