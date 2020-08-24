@@ -4,8 +4,6 @@ import java.awt.Image;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-
-
 import gamejpanel.GameJPanel;
 
 
@@ -25,7 +23,7 @@ public class GameJFrame extends JFrame{
 		this.addKeyListener(panel);
 		this.setSize(WIDTH,HEIGHT);
 		this.setResizable(false);
-	    this.setLocationRelativeTo(null);
+	    this.setLocationByPlatform(true);
 	    Image img = new ImageIcon("image/fengmian.jpg").getImage();
         this.setIconImage(img);	
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
