@@ -10,22 +10,30 @@ import java.util.TimerTask;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+
+import entity.AirPlane;
 import entity.Attack;
-
-import entity.Fighter;
-
+import entity.Attack2;
 import entity.BaoShi;
-import entity.airplane;
+import entity.BaoShi1;
+import entity.BaoShi2;
+import entity.BaoShi3;
+import entity.Fighter;
 import gamejframe.GameJFrame;
 
 
-public class GameJPanel extends JPanel implements KeyListener{
+public class GameJPanel extends JPanel  implements KeyListener{
 
 	private Image[] background;
-	private airplane[] airplane;
+	private AirPlane[] airplane;
 	Fighter fighter;
-	Attack[] attack1;
+	Attack[] attack1;  //玩家子弹
 	Attack attack;
+	Attack2[] attack2; //敌机子弹
+	// 金币，也可以换成其他的，比如宝石，燃油
+    private BaoShi[] baoshi = new BaoShi[1];
+    
+    
 	
 //待定
 //	private Image showfield;
@@ -42,18 +50,20 @@ public class GameJPanel extends JPanel implements KeyListener{
 //  Boss 最后的BOSS，打败既通关	
 //  Boss boss;
 
-// 金币，也可以换成其他的，比如宝石，燃油
-    private BaoShi[] baoshi = new BaoShi[1];
+
    
 
     public GameJPanel() {
-    	attack = new Attack();
-    	attack1 = new Attack[0];
+    	
+    	
     	fighter = new Fighter();
+    	attack = new Attack(fighter);
+    	attack1 = new Attack[0];    	
+    	attack2 = new Attack2[0];
     	
     	
         baoshi[0] = new BaoShi();
-        airplane =new airplane[0];
+        airplane =new AirPlane[0];
     	background = new Image[2];
     	background[0] = new ImageIcon("image/background.png").getImage();
     	background[1]= new ImageIcon("image/background2.png").getImage();
@@ -61,7 +71,44 @@ public class GameJPanel extends JPanel implements KeyListener{
 	//  其他内容后期添加
 }
 
-    //绘画方法
+    
+    
+    
+    public void action() {
+    	new Thread() {
+    		@Override
+    		public void run() {
+    			super.run();
+    			while(true) {
+    				
+    			    //移动方法
+    				stepAction();
+    				//批量生产方法
+    				EnterAction();
+    				//越界处理
+    				outEntity();
+    				//碰撞
+    				wardAction();   				
+    				//重绘
+    				repaint();
+    				if(index % 300 == 0) 
+    				{
+    					System.out.println("飞机分数：" + fighter.getCount());
+    					System.out.println("飞机生命值: " + fighter.getHP());
+    				}
+    				try {
+    					Thread.sleep(10);
+    				}catch(InterruptedException e)
+    				{
+    					e.printStackTrace();
+    				}
+    			}
+    		}
+    	}.start();
+    }
+    
+    
+  //绘画方法
     int a = 0;
     public void paint(Graphics g)
     {
@@ -70,12 +117,12 @@ public class GameJPanel extends JPanel implements KeyListener{
     	g.drawImage(background[0],0,a,GameJFrame.WIDTH, GameJFrame.HEIGHT,null);
     	g.drawImage(background[1],0,a-GameJFrame.HEIGHT,GameJFrame.WIDTH, GameJFrame.HEIGHT,null);
     	g.drawImage(background[1],0,a-2*GameJFrame.HEIGHT,GameJFrame.WIDTH, GameJFrame.HEIGHT,null);
-    	g.drawImage(background[0],0,a-3*GameJFrame.HEIGHT,GameJFrame.WIDTH, GameJFrame.HEIGHT,null);
+    	g.drawImage(background[1],0,a-3*GameJFrame.HEIGHT,GameJFrame.WIDTH, GameJFrame.HEIGHT,null);
     	if(a == 3*GameJFrame.HEIGHT) {
     		a = 0;
     	}
     	fighter.paintFighter(g);
-	 for(int i = 0;i<attack1.length;i++)
+	    for(int i = 0;i<attack1.length;i++)
  	    {
  	    	attack1[i].paintAttack(g);
  	    	}
@@ -93,7 +140,7 @@ public class GameJPanel extends JPanel implements KeyListener{
             
             
     	}
-	if(fighter.isQ()==true) {
+	    if(fighter.isQ()==true) {
     		fighter.paintfire(g);
     		fighter.setQ(false);
     	}
@@ -104,52 +151,89 @@ public class GameJPanel extends JPanel implements KeyListener{
 			baoshi[i].paintBaoShi(g);
 		}
 		
+    	int count = 0;
     	for(int i = 0;i < airplane.length;i++) {
-    		airplane[i].paintairplane(g);
+    		airplane[i].paintairplane(g);		
+    	}
+    	
+
+    	
+    	
+    	
+    	if(BeAttacked) {
+			count++;
+			airplane[selected].paintairplane1(g);
+			Timer timer = new Timer();// 实例化Timer类
+            timer.schedule(new TimerTask() {
+                public void run() {
+                	BeAttacked=false;
+                    this.cancel();
+                }
+            }, 300);// 这里百毫秒
+            
+            if(count>5) {
+    			airplane[selected].paintboom(g);
+    			Timer timer1 = new Timer();// 实例化Timer类
+                timer.schedule(new TimerTask() {
+                    public void run() {
+                    	
+                        this.cancel();
+                    }
+                }, 300);// 这里百毫秒
+                count=0;
+    		}    
+                     
+		}
+    	for(int i = 0;i < attack2.length;i++) {
+    		attack2[i].paintAttack2(g);
+    		
     	}
 	}
     
-    
-    
-    public void action() {
-    	new Thread() {
-    		@Override
-    		public void run() {
-    			super.run();
-    			while(true) {
-    				
-    			    //移动方法
-    				stepAction();
-    				//批量生产方法
-    				EnterAction();
-    				repaint();
-    				try {
-    					Thread.sleep(10);
-    				}catch(InterruptedException e)
-    				{
-    					e.printStackTrace();
-    				}
-    			}
-    		}
-    	}.start();
-    }
-    
-   
-    
-    int index = 0;
+    //生成对象
+	int index = 0;
     protected void EnterAction() {
     	index++;
-		if(index%400==0) {
+		if(index%300==0) {
 			// 创建对象，往敌机数组里添加对象
-			airplane a1 = new airplane();
+			AirPlane a1 = new AirPlane();
 			//扩容
 			airplane = Arrays.copyOf(airplane,airplane.length+1);
 			//添加对象
 			airplane[airplane.length-1] = a1;
 		}
 		
-		//宝石
-		if(index%800 == 0)
+		for(int i=0 ;i < airplane.length ; i++ )
+		{
+			if(index%80==0) {
+				// 创建对象，往敌机数组里添加对象
+				Attack2 b2 = new Attack2(airplane[i]); 
+				//扩容
+				attack2 = Arrays.copyOf(attack2,attack2.length+1);
+				//添加对象
+				attack2[attack2.length-1] = b2;
+			}
+		}
+		
+		
+		
+		if(index%150 == 0)
+		{
+			BaoShi b = new BaoShi();
+			baoshi = Arrays.copyOf(baoshi, baoshi.length+1);
+		    baoshi[baoshi.length-1] = b;
+			
+		}
+		
+		
+		//子弹
+		if(index % 20 == 0) {
+		Attack b1 = new Attack(fighter);
+	    attack1 = Arrays.copyOf(attack1,attack1.length+1);
+	    attack1[attack1.length-1] = b1;
+	}
+	
+	if(index%800 == 0)
 		{
 			
 			BaoShi a = new BaoShi1();
@@ -166,41 +250,18 @@ public class GameJPanel extends JPanel implements KeyListener{
 		    baoshi[baoshi.length-1] = b;
 		}
 		
-		if(index%100 == 0)
+		if(index%120 == 0)
 		{
 			BaoShi c = new BaoShi3();
 			baoshi = Arrays.copyOf(baoshi, baoshi.length+1);
 		    baoshi[baoshi.length-1] = c;
 		}
-		//子弹
-		Attack b1 = new Attack();
-	        attack1 = Arrays.copyOf(attack1,attack1.length+1);
-	        attack1[attack1.length-1] = b1;
-	}
+		
+     }
 
     
-    private void stepAction()
-    {
-    	for(int i = 0;i<attack1.length;i++)
-		{
-			attack1[i].step();
-		}
-
-	
-    	for (int i = 0; i <baoshi.length; i++) {
-			baoshi[i].step();
-		}
-    	for(int i = 0;i < airplane.length;i++) {
-    		airplane[i].step();
-	    }
-    }
-    
-    
-    
-    //出界
-    private void outEntity() {
-    	
-    	
+     protected void outEntity() {
+    	//宝石出界
     	for (int i = 0; i < baoshi.length; i++) {
 			if(baoshi[i].getY() > (BaoShi.HEIGHT + GameJFrame.HEIGHT)){
 				BaoShi g = baoshi[i];
@@ -209,52 +270,204 @@ public class GameJPanel extends JPanel implements KeyListener{
 				baoshi = Arrays.copyOf(baoshi, baoshi.length-1);
 			}
 		}
-    }
+    	
+    	
+    	
+    	
+    	//敌机子弹出界
+    	for (int i = 0; i < attack2.length; i++) {
+			if(attack2[i].getY() > 800){
+				Attack2 b3 = attack2[i];
+				attack2[i] = attack2[attack2.length-1];
+				attack2[attack2.length-1]=b3;
+				attack2 = Arrays.copyOf(attack2, attack2.length-1);
+			}
+		}
+    	
+   	
+    	//敌机出界
+    	for (int i = 0; i < airplane.length; i++) {
+			if(airplane[i].getY() > AirPlane.Air_HEIGHT +800){
+				AirPlane b4 = airplane[i];
+				airplane[i] = airplane[airplane.length-1];
+				airplane[airplane.length-1]=b4;
+				airplane = Arrays.copyOf(airplane, airplane.length-1);
+			}
+		}
+    	//玩家子弹出界
+    	for (int i = 0; i < attack1.length; i++) {
+			if(attack1[i].getY() < Attack.b){
+				Attack b5 = attack1[i];
+				attack1[i] = attack1[attack1.length-1];
+				attack1[attack1.length-1]=b5;
+				attack1 = Arrays.copyOf(attack1, attack1.length-1);
+			}
+		}
+    	
+    	
+    	//敌机爆炸后消失
+    	for (int i = 0; i < airplane.length; i++) {
+			if(airplane[i].getHp()<0){
+				fighter.addCount(airplane[i].getCount());
+				AirPlane b4 = airplane[i];
+				airplane[i] = airplane[airplane.length-1];
+				airplane[airplane.length-1]=b4;
+				airplane = Arrays.copyOf(airplane, airplane.length-1);
+			}
+		}
+	 }
+     
+        //游戏结束标志
+        public boolean isOver = false;
+        //标记受到攻击
+        boolean BeAttacked = false;
+        //碰撞
+	    int selected;
+        public void wardAction() {
+    		
+    		
+    		for(int i = 0;i < baoshi.length;i++)
+    		{
+    			boolean f = fighter.getX_gun() <( baoshi[i].getX() + BaoShi.WIDTH) && (fighter.getX_gun() + Fighter.WIDTH) > baoshi[i].getX()
+    					                                                            &&(baoshi[i].getY() + BaoShi.HEIGHT) > fighter.getY_gun()
+    					                                                            &&baoshi[i].getY() < (fighter.getY_gun() +Fighter.HEIGHT);
+                if(f)
+                {
+                	fighter.addCount(baoshi[i].getCount());
+                	BaoShi g1 = baoshi[i];
+    				baoshi[i] = baoshi[baoshi.length-1];
+    				baoshi[baoshi.length-1]=g1;
+    				baoshi = Arrays.copyOf(baoshi, baoshi.length-1);
+                }
+    		} 
+    		
+    		//玩家子弹碰撞敌机
+    		for(int i = 0 ;i < airplane.length ;i++ ) {
+    			for(int j = 0 ;j < attack1.length ;j++ )
+    			{
+    				boolean f = airplane[i].getX()-50<attack1[j].getX()&&airplane[i].getX()+AirPlane.Air_WIDTH>attack1[j].getX()&&
+    					    attack1[j].getY()<airplane[i].getY()+AirPlane.Air_HEIGHT&&attack1[j].getY()>airplane[i].getY()+60;
+    					    
+    			    if(f) {
+    				airplane[i].Hp -= Attack.hurt1;
+    				if(airplane[i].Hp > 0)		
+    				{
+    					BeAttacked = true;
+    					selected = i;
+    				}
+    			}
+    			}
+    				
+    			   if(airplane[i].Hp <= 0) BeAttacked = false;
+    			   
+    		}
+    		
+    		//敌机子弹碰撞玩家
+    		for(int i = 0;i < attack2.length ; i++ )
+    		{
+    			boolean f = fighter.getX_gun()- 40 < attack2[i].getX() && 
+    			fighter.getX_gun()+Fighter.WIDTH>attack2[i].getX()&&
+			    attack2[i].getY() < fighter.getY_gun()+Fighter.HEIGHT&&
+			    attack2[i].getY() + 20 >fighter.getY_gun();
+			    
+			    
+			    if(f)
+			    {
+			    	fighter.setHP(fighter.getHP() - Attack2.hurt2);
+			    	Attack2 b = attack2[i];
+					attack2[i] = attack2[attack2.length-1];
+					attack2[attack2.length-1]=b;
+					attack2 = Arrays.copyOf(attack2, attack2.length-1);	    	
+			    }
+    		}
+    		
+    		//敌机与玩家飞机碰撞
+    		for(int i = 0;i < airplane.length; i++ )
+    		{
+    			boolean f = fighter.getX_gun()  < airplane[i].getX() + AirPlane.Air_WIDTH
+    				     && fighter.getX_gun() + Fighter.WIDTH > airplane[i].getX()
+    					 && fighter.getY_gun() < airplane[i].getY() + AirPlane.Air_HEIGHT
+    					 && fighter.getY_gun() + Fighter.HEIGHT > airplane[i].getY()
+    					 || fighter.getX_gun() + Fighter.WIDTH > airplane[i].getX()
+    				     && fighter.getX_gun()  > airplane[i].getX() + AirPlane.Air_WIDTH
+    				     && fighter.getY_gun() < airplane[i].getY() + AirPlane.Air_HEIGHT
+    					 && fighter.getY_gun() + Fighter.HEIGHT > airplane[i].getY();
+    		
+    			isOver = true;
+    			if(index % 200 == 0  && f)
+    			   System.out.println("飞机和敌机撞上了");	
+    		}
+    	}
+        
+        private void stepAction()
+        {
+        	for(int i = 0;i<attack1.length;i++)
+    		{
+    			attack1[i].step();
+    		}
+
+    	
+        	for (int i = 0; i <baoshi.length; i++) {
+    			baoshi[i].step();
+    		}
+        	for(int i = 0;i < airplane.length;i++) {
+        		airplane[i].step();
+    	    }
+        	
+        	for(int i = 0;i < attack2.length; i++ )
+        	{
+        		attack2[i].step();
+        	}
+        }
+    
+    
+    
+    
     public void keyPressed(KeyEvent e) {
 		// 获取当前坐标
-		int x = Fighter.getX_gun();
-		int y = Fighter.getY_gun();
+		int x = fighter.getX_gun();
+		int y = fighter.getY_gun();
 		//上移
 		if(e.getKeyCode()==KeyEvent.VK_UP) {
 
-			Fighter.setY_gun(y-20);
+			fighter.setY_gun(y-20);
 			fighter.setQ(true);
 
 		}
 		//上移上限
-		if(Fighter.getY_gun()<=0) {
-			Fighter.setY_gun(y);
+		if(fighter.getY_gun()<=0) {
+			fighter.setY_gun(y);
 		}
 		//下移
 		if(e.getKeyCode()==KeyEvent.VK_DOWN) {
 
-			Fighter.setY_gun(y+20);
+			fighter.setY_gun(y+20);
 			
 
 		}
 		//下移上限
-		if(Fighter.getY_gun()>=GameJFrame.HEIGHT-100) {
-			Fighter.setY_gun(y);
+		if(fighter.getY_gun()>=GameJFrame.HEIGHT-100) {
+			fighter.setY_gun(y);
 		}
 		//右
 		if(e.getKeyCode()==KeyEvent.VK_RIGHT) {
-				Fighter.setX_gun(x+20);
+				fighter.setX_gun(x+20);
 			fighter.setQ(true);
 			
 		}
 		//右移上限
-		if(Fighter.getX_gun()>=GameJFrame.WIDTH-50) {
-			Fighter.setX_gun(x);
+		if(fighter.getX_gun()>=GameJFrame.WIDTH-50) {
+			fighter.setX_gun(x);
 		}
 		//左
 		if(e.getKeyCode()==KeyEvent.VK_LEFT) {
-			Fighter.setX_gun(x-20);
+			fighter.setX_gun(x-20);
 			fighter.setQ(true);
 			
 		}
 		//左移上限
-		if(Fighter.getX_gun()<=0) {
-			Fighter.setX_gun(x);
+		if(fighter.getX_gun()<=0) {
+			fighter.setX_gun(x);
 		}
 		//放技能
 		if(e.getKeyCode()==KeyEvent.VK_SPACE) {
@@ -265,9 +478,7 @@ public class GameJPanel extends JPanel implements KeyListener{
 			attack.setJ(true);
 			
 		}
-
-						
-				
+							
 	}
 
 
@@ -285,8 +496,4 @@ public class GameJPanel extends JPanel implements KeyListener{
 		// TODO Auto-generated method stub
 		
 	}
-		
-}
-
-    
 }
